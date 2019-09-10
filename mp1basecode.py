@@ -20,10 +20,10 @@ class PuzzleState():
         return tuple(self.puzzle.ravel()).__hash__()
     
     def _compute_heuristic_cost(self):
-        """ TODO """
-        return abs(??? - 0) + abs(?? - 0)
-
-    #formula should be (abs(start - goal) + abs(start - goal))
+        self.hcost = sum(np.argwhere(self.puzzle ==0)[0])
+        #Because 0,0 is the goal, can just sum the array of the coordinates
+        return self.hcost
+        #formula normally should be (abs(start - goal) + abs(start - goal))
     
     def is_goal(self):
         return np.array_equal(PuzzleState.SOLVED_PUZZLE,self.puzzle)
@@ -51,10 +51,34 @@ class PuzzleState():
         print(self)
     
     def can_move(self, direction):
-        """ TODO """
-        
+        if self.zeroloc[1] == 0 and direction == "left":
+            return False
+        if self.zeroloc[1] == 2 and direction == "right":
+            return False
+        if self.zeroloc[0] == 0 and direction == "up":
+            return False
+        if self.zeroloc[0] == 2 and direction == "down":
+            return False
+        return True
+
     def gen_next_state(self, direction):
-        """ TODO """
+        y = self.zeroloc[0]
+        x = self.zeroloc[1]
+        if direction == "left":
+            self.puzzle[y][x] = self.puzzle[y][x-1]
+            self.puzzle[y][x-1] = 0
+        if direction == "up":
+            self.puzzle[y][x] = self.puzzle[y-1][x]
+            self.puzzle[y-1][x] = 0
+        if direction == "down":
+            self.puzzle[y][x] = self.puzzle [y+1][x]
+            self.puzzle[y+1][x] = 0
+        if direction == "right":
+            self.puzzle[y][x] = self.puzzle[y][x+1]
+            self.puzzle[y][x+1] = 0
+        return self.puzzle
+
+
             
 
 print('Artificial Intelligence')
@@ -68,10 +92,8 @@ frontier = queue.PriorityQueue()
   
   
 a = np.loadtxt('mp1input.txt', dtype=np.int32)
-print (a)
-pointer = np.where(a == 0)
 start_state = PuzzleState(a,0,None)
-print (start_state.pred)
+
 
 
 frontier.put(start_state)
