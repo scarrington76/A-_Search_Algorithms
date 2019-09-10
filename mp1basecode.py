@@ -1,3 +1,4 @@
+#Scott Carrington
 
 # This program implements A* for solving a sliding tile puzzle
 
@@ -20,11 +21,11 @@ class PuzzleState():
         return tuple(self.puzzle.ravel()).__hash__()
     
     def _compute_heuristic_cost(self):
-        self.hcost = sum(np.argwhere(self.puzzle ==0)[0])
-        #Because 0,0 is the goal, can just sum the array of the coordinates
-        return self.hcost
-        #formula normally should be (abs(start - goal) + abs(start - goal))
-    
+        solved_puzzle = np.arange(9).reshape((3, 3))
+        solved_indices = [np.argwhere(solved_puzzle == i) for i in range(9)]
+        diffs = [np.abs(solved_indices[i] - np.argwhere(self.puzzle == i)[0]) for i in range(9)]
+        self.hcost = np.sum(diffs)
+
     def is_goal(self):
         return np.array_equal(PuzzleState.SOLVED_PUZZLE,self.puzzle)
     
@@ -64,19 +65,20 @@ class PuzzleState():
     def gen_next_state(self, direction):
         y = self.zeroloc[0]
         x = self.zeroloc[1]
+        new_puzzle = np.copy(self.puzzle)
         if direction == "left":
-            self.puzzle[y][x] = self.puzzle[y][x-1]
-            self.puzzle[y][x-1] = 0
+            new_puzzle[y][x] = new_puzzle[y][x-1]
+            new_puzzle[y][x-1] = 0
         if direction == "up":
-            self.puzzle[y][x] = self.puzzle[y-1][x]
-            self.puzzle[y-1][x] = 0
+            new_puzzle[y][x] = new_puzzle[y-1][x]
+            new_puzzle[y-1][x] = 0
         if direction == "down":
-            self.puzzle[y][x] = self.puzzle [y+1][x]
-            self.puzzle[y+1][x] = 0
+            new_puzzle[y][x] = new_puzzle [y+1][x]
+            new_puzzle[y+1][x] = 0
         if direction == "right":
-            self.puzzle[y][x] = self.puzzle[y][x+1]
-            self.puzzle[y][x+1] = 0
-        return self.puzzle
+            new_puzzle[y][x] = new_puzzle[y][x+1]
+            new_puzzle[y][x+1] = 0
+        return PuzzleState(new_puzzle, self.fcost, self)
 
 
             
